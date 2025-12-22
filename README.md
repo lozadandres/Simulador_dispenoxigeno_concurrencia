@@ -19,6 +19,105 @@ En una estación orbital, el suministro de oxígeno es crítico. Las cápsulas d
 *   `Astronauta.java`: Representa un hilo de ejecución (Thread) que simula a un miembro de la tripulación.
 *   `DispensadorOxigeno.java`: El recurso compartido (Monitor) que gestiona el acceso sincronizado.
 
+## Diagramas Técnicos (Implementación GUI)
+
+### 1. Diagrama de Clases (UML)
+
+Muestra la estructura de clases, incluyendo la integración de `InterfazSimulador`.
+
+```mermaid
+classDiagram
+    class SimuladorOxigeno {
+        +main(args) void
+        -iniciarSimulacion(InterfazSimulador gui)
+    }
+
+    class InterfazSimulador {
+        -JPanel panelEstado
+        -JTextArea areaLog
+        +InterfazSimulador()
+        +actualizarEstadoDispensador(boolean ocupado, String nombre)
+        +agregarLog(String mensaje)
+    }
+
+    class DispensadorOxigeno {
+        -InterfazSimulador interfaz
+        +DispensadorOxigeno(InterfazSimulador gui)
+        +dispensar(String nombre) synchronized
+    }
+
+    class Astronauta {
+        -String nombre
+        -DispensadorOxigeno dispensador
+        +run()
+    }
+
+    SimuladorOxigeno ..> InterfazSimulador : crea
+    SimuladorOxigeno ..> DispensadorOxigeno : crea
+    SimuladorOxigeno ..> Astronauta : crea y arranca
+    
+    DispensadorOxigeno --> "1" InterfazSimulador : actualiza >
+    Astronauta --> "1" DispensadorOxigeno : usa >
+    InterfazSimulador --|> JFrame
+```
+
+### 2. Diagrama de Secuencia
+
+Ilustra la interacción entre el hilo `Astronauta`, el monitor `DispensadorOxigeno` y la actualización de la `InterfazSimulador`.
+
+```mermaid
+sequenceDiagram
+    participant A as Astronauta (Hilo)
+    participant D as DispensadorOxigeno
+    participant GUI as InterfazSimulador
+
+    A->>D: dispensar("Shepard")
+    activate D
+    Note right of D: Lock Acquired (Synchronized)
+    
+    D->>GUI: actualizarEstadoDispensador(true, "Shepard")
+    D->>GUI: agregarLog("Shepard inicia carga")
+    
+    D->>D: Thread.sleep(...)
+    
+    D->>GUI: agregarLog("Shepard termina carga")
+    D->>GUI: actualizarEstadoDispensador(false, "")
+    
+    deactivate D
+    Note right of D: Lock Released
+    D-->>A: retorno
+```
+
+### 3. Diagrama de Estados del Hilo (Astronauta)
+
+Describe el ciclo de vida del hilo `Astronauta` y su relación con el estado visual en la GUI.
+
+```mermaid
+stateDiagram-v2
+    state "NUEVO" as New
+    state "LISTO (Runnable)" as Runnable
+    state "BLOQUEADO (Waiting)" as Blocked
+    state "TERMINADO" as Terminated
+
+    [*] --> New : new Astronauta()
+    New --> Runnable : start()
+    
+    state Runnable {
+        direction LR
+        Ejecutando --> IntentandoAcceder
+        IntentandoAcceder --> UsandoRecurso : Lock Obtenido
+        UsandoRecurso --> Finalizando : Fin método
+    }
+
+    IntentandoAcceder --> Blocked : Recurso Ocupado
+    Blocked --> Runnable : Recurso Liberado
+
+    UsandoRecurso : GUI muestra "EN USO" (Rojo)
+    
+    Finalizando --> Terminated
+    Terminated --> [*]
+```
+
 ## Requisitos
 
 *   Java Development Kit (JDK) 8 o superior.

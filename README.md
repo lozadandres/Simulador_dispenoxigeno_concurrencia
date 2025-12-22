@@ -19,6 +19,20 @@ En una estación orbital, el suministro de oxígeno es crítico. Las cápsulas d
 *   `Astronauta.java`: Representa un hilo de ejecución (Thread) que simula a un miembro de la tripulación.
 *   `DispensadorOxigeno.java`: El recurso compartido (Monitor) que gestiona el acceso sincronizado.
 
+## Capturas de Pantalla
+
+La interfaz gráfica muestra visualmente el estado del recurso compartido (Monitor).
+
+### Estado: En Uso (Recurso Bloqueado)
+Cuando un astronauta obtiene el acceso exclusivo (mutex), el panel se torna rojo indicando que el dispensador está ocupado.
+
+![Dispensador en uso](screenshots/captura_en_uso.png)
+
+### Estado: Disponible (Recurso Libre)
+Cuando el astronauta termina su recarga y libera el recurso, el panel se torna verde, permitiendo el acceso al siguiente en la cola.
+
+![Dispensador disponible](screenshots/captura_disponible.png)
+
 ## Diagramas Técnicos (Implementación GUI)
 
 ### 1. Diagrama de Clases (UML)

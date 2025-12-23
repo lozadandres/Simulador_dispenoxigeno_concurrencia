@@ -155,3 +155,8 @@ stateDiagram-v2
     ```
 
 La aplicación lanzará una ventana donde podrás observar el registro de actividades y el estado de los astronautas en tiempo real.
+
+## Colaboradores
+
+- Andrés Lozada : [GitHub](https://github.com/lozadandres)
+- Carlos Quintero : [GitHub](https://github.com/Carlitos-quintero)
